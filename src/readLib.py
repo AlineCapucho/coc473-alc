@@ -5,18 +5,18 @@ def readFileT1(file):
   with open(file, 'r') as f:
     order = int(f.readline())
     icod = int(f.readline())
-    idet = int(f.readline())
+    idet = float(f.readline())
     aMatrix = np.zeros([order,order], dtype=float)
     bVector = np.zeros([order], dtype=float)
     for i in range(0, order, 1):
       line = (f.readline()).split()
       for j in range(0, order+1, 1):
         if j!=order:
-          aMatrix[i][j] = int(line[j])
+          aMatrix[i][j] = float(line[j])
         else:
-          bVector[i]=int(line[j])
+          bVector[i]=float(line[j])
     if icod==3 or icod==4:
-      tolm = int(f.readline())
+      tolm = float(f.readline())
 
     if(icod==1):
       mtx.luDec(aMatrix, bVector)
@@ -29,10 +29,10 @@ def readFileT1(file):
 
 def readFileT2(file):
   with open(file, 'r') as f:
-    order = f.readline()
-    icod = f.readline()
-    idet = f.readline()
-    tolm = f.readline()
+    order = int(f.readline())
+    icod = int(f.readline())
+    idet = float(f.readline())
+    tolm = float(f.readline())
 
     if(icod==1):
       mtx.powerMet()
