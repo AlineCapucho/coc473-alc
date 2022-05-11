@@ -60,18 +60,31 @@ def choleskyDec(matrix, vector):
   return x
 
 def itrJacobi(matrix, vector, tolm):
-  x = np.zeros([vector.size], dtype=float)
   x0 = np.zeros([vector.size], dtype=float)
+  x = np.zeros([vector.size], dtype=float)
+  cont = 0
+  res = 1
+  while(res > tolm):
+    for i in range(0, vector.size, 1):
+      x[i] = (vector[i] - sum((matrix[i][j]*x0[j] if j!=i else 0) for j in range (0, vector.size, 1)))/matrix[i][i]
+    res = eucNorm(np.subtract(x, x0))/eucNorm(x)
+    x0 = np.copy(x)
+    cont += 1
+  return x
+
+def itrGaussSeidel(matrix, vector, tolm):
+  x0 = np.zeros([vector.size], dtype=float)
+  x = np.zeros([vector.size], dtype=float)
+  cont = 0
   res = 1
   while(res > tolm):
     for i in range(0, vector.size, 1):
       x[i] = (vector[i] - sum((matrix[i][j]*x[j] if j!=i else 0) for j in range (0, vector.size, 1)))/matrix[i][i]
-      res = eucNorm(np.subtract(x, x0))/eucNorm(x)
-      x0 = np.copy(x)
+    res = eucNorm(np.subtract(x, x0))/eucNorm(x)
+    x0 = np.copy(x)
+    cont += 1
   return x
 
-def itrGaussSeidel(matrix, vector, tolm):
-  print('')
 
 def powerMet(matrix, vector):
   print('')
