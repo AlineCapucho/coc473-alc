@@ -142,21 +142,20 @@ def itrGaussSeidel(matrix, vector, tolm):
     print('Unable to complete operation. Could not converge.')
 
 def powerMet(matrix, tolm):
-  x = np.zeros(matrix[0].size, dtype=float)
+  x = np.full(matrix[0].size, 1)
   x[0] = 1
-  x[1] = 1
-  x[2] = 1
   ups0 = infNorm(x)
   cont = 0
   res = 1
   
   while(res > tolm):
-    cont += 1
     y = np.matmul(matrix, x)
     ups1 = infNorm(y)
-    x = y/ups1
-    res = abs(ups1 - ups0)/abs(ups1)
-    ups0 = ups1
+    res = abs(ups1 - ups0)/ups1
+    if res>tolm:
+      cont += 1
+      x = y/ups1
+      ups0 = ups1
   
   print(x, cont, res)
   return x
