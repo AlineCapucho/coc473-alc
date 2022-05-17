@@ -32,6 +32,19 @@ def __eigenDet(eigen):
     det *= eigen
   return det
 
+def __maxNonDig(matrix):
+  max = 0
+  line = 0
+  column = 0
+  for i in range(0, matrix[0].size, 1):
+    for j in range(0, matrix[0].size, 1):
+      if j!=i and abs(matrix[i][j])>max:
+        max = abs(matrix[i][j])
+        line = i
+        column = j
+  
+  return [max, line, column]
+
 def __diagDom(matrix):
   """"Calculates wether a given matrix is diagonally dominant"""
   sumL = 0
@@ -48,7 +61,7 @@ def __diagDom(matrix):
   return True
 
 def __symmetric(matrix):
-  if( matrix.any() != np.transpose(matrix).any):
+  if( matrix.any() != np.transpose(matrix).any()):
     return False
   return True
 
@@ -66,13 +79,6 @@ def __infNorm(vector):
       if abs(vector[i]) > infNorm:
         infNorm = abs(vector[i])
   return(infNorm)
-
-def __diagonal(matrix, tolm):
-  for i in range(0, matrix[0].size, 1):
-    for j in range(0, matrix[0].size, 1):
-      if j!=i and matrix[i][j]>tolm:
-        return False
-  return True
 
 def luDec(matrix, vector, detCod):
   """Solves a given linear equation system through the LU Decomposition
@@ -227,7 +233,7 @@ def powerMet(matrix, tolm):
       resHist.append(res)
   
   result = [
-    'Autovector for autovalue(y)={:.3f}: '.format(ups1) + str(x),
+    'Autovetor for autovalor(y)={:.3f}: '.format(ups1) + str(x),
     'Number of iterations: ' + str(cont),
     'Error History: ',
     resHist
@@ -241,51 +247,56 @@ def jacobiMet(matrix, tolm, detCod):
   else:
     pMatrix = np.zeros([matrix[0].size, matrix[0].size], dtype=float)
     aMatrix = np.copy(matrix)
+    xMatrix = np.zeros([matrix[0].size, matrix[0].size], dtype=float)
+    for i in range(0, xMatrix[0].size, 1):
+      xMatrix[i][i] = 1
+
     cont = 0
-    max = 0
-    line = 0
-    column = 0
     o = 0
+    maximum = __maxNonDig(aMatrix)[0]
+    line = __maxNonDig(aMatrix)[1]
+    column = __maxNonDig(aMatrix)[2]
 
-    while(__diagonal(pMatrix, tolm) == False):
+    while(maximum > tolm):
       cont += 1
-
-      for i in range(0, aMatrix[0].size, 1):
-        for j in range(0, aMatrix[0].size, 1):
-          if j!=i and abs(aMatrix[i][j])>max:
-            max = abs(aMatrix[i][j])
-            line = i
-            column = j
-
-      for i in range(0, aMatrix[0].size, 1):
-        for j in range(0, aMatrix[0].size, 1):
-          if j!=i and abs(aMatrix[i][j])>max:
-            max = abs(aMatrix[i][j])
-            line = i
-            column = j
-        pMatrix[i][i] = 1
       
+      pMatrix = np.zeros([matrix[0].size, matrix[0].size], dtype=float)
+
       if(aMatrix[line][line] != aMatrix[column][column]):
-        o = (atan*(aMatrix[line][column]/(aMatrix[line][line] - aMatrix[column][column])))/2
+        o = (atan(aMatrix[line][column]/(aMatrix[line][line] - aMatrix[column][column])))/2
       else:
         o = pi/4
 
-      pMatrix[line][column] = sin(o)
-      pMatrix[column][line] = -sin(o)
-      pMatrix[line][line] = cos(o)
-      pMatrix[column][column] = cos(o)
+      pMatrix[line][column] = -sin(o)
+      pMatrix[column][line] = sin(o)
+      for i in range(0, pMatrix[0].size, 1):
+        if i == line or i == column:
+          pMatrix[i][i] = cos(o)
+        else:
+          pMatrix[i][i] = 1
 
-      apmult = np.matmul()
-      if(__diagonal(pMatrix, tolm) == False):
-        aMatrix = pMatrix
-  
-  result = []
+      print(pMatrix)
 
-  if detCod>0:
-    det = __eigenDet(x)
-    result.append(
-      'Determinant: ' + str(det)
-    )
+      aMatrix = np.matmul(np.matmul(np.transpose(pMatrix), aMatrix), pMatrix)
+      xMatrix = np.matmul(xMatrix, pMatrix)
+
+      maximum = __maxNonDig(aMatrix)[0]
+      line = __maxNonDig(aMatrix)[1]
+      column = __maxNonDig(aMatrix)[2]
+
+  result = [
+    'A Matrix: ',
+    aMatrix,
+    'X Matrix: ',
+    xMatrix,
+     'Number of iterations: ' + str(cont)
+  ]
+
+  # if detCod>0:
+  #   det = __eigenDet(x)
+  #   result.append(
+  #     'Determinant: ' + str(det)
+  #   )
 
   return result
 
