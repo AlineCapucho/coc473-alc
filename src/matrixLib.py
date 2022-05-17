@@ -1,301 +1,362 @@
 import numpy as np
 from math import sqrt, sin, cos, atan, pi
+import math
 
-np.seterr(all='raise')
+np.seterr(all="raise")
+
 
 def __fwdSub(matrix, vector):
-  """"Calculates the foward substitution in LU decomposition"""
-  y = np.zeros([vector.size], dtype=float)
-  y[0] = vector[0]
-  for i in range (1, vector.size, 1):
-    y[i] = (vector[i] - sum((y[j]*matrix[i][j]) for j in range(0, i)))
-  return y
+    """ "Calculates the foward substitution in LU decomposition"""
+    y = np.zeros([vector.size], dtype=float)
+    y[0] = vector[0]
+    for i in range(1, vector.size, 1):
+        y[i] = vector[i] - sum((y[j] * matrix[i][j]) for j in range(0, i))
+    return y
+
 
 def __retSub(matrix, vector):
-  """"Calculates the retro substitution in LU decomposition"""
-  x = np.zeros([vector.size], dtype=float)
-  x[vector.size-1] = vector[vector.size-1]/matrix[vector.size-1][vector.size-1]
-  for i in range (vector.size - 2, -1, -1):
-    x[i] = (vector[i] - sum((x[j]*matrix[i][j]) for j in range(vector.size-1, i, -1)))/matrix[i][i]
-  return x
+    """ "Calculates the retro substitution in LU decomposition"""
+    x = np.zeros([vector.size], dtype=float)
+    x[vector.size - 1] = (
+        vector[vector.size - 1] / matrix[vector.size - 1][vector.size - 1]
+    )
+    for i in range(vector.size - 2, -1, -1):
+        x[i] = (
+            vector[i]
+            - sum((x[j] * matrix[i][j]) for j in range(vector.size - 1, i, -1))
+        ) / matrix[i][i]
+    return x
+
 
 def __detTrg(matrix):
-  """Calculates the determinant for an upper or lower triangular matrix"""
-  det = 1
-  for i in range(0, matrix[0].size, 1):
-    det *= matrix[i][i]
-  return det
+    """Calculates the determinant for an upper or lower triangular matrix"""
+    det = 1
+    for i in range(0, matrix[0].size, 1):
+        det *= matrix[i][i]
+    return det
+
 
 def __maxNonDig(matrix):
-  max = 0
-  line = 0
-  column = 0
-  for i in range(0, matrix[0].size, 1):
-    for j in range(0, matrix[0].size, 1):
-      if j!=i and abs(matrix[i][j])>max:
-        max = abs(matrix[i][j])
-        line = i
-        column = j
-  
-  return [max, line, column]
+    max = 0
+    line = 0
+    column = 0
+    for i in range(0, matrix[0].size, 1):
+        for j in range(0, matrix[0].size, 1):
+            if j != i and abs(matrix[i][j]) > max:
+                max = abs(matrix[i][j])
+                line = i
+                column = j
+
+    return [max, line, column]
+
 
 def __diagDom(matrix):
-  """"Calculates wether a given matrix is diagonally dominant"""
-  sumL = 0
-  sumC = 0
-  for i in range(0, matrix[0].size, 1):
-    for j in range(0, matrix[0].size, 1):
-      if i!=j:
-        sumL += matrix[i][j]
-        sumC += matrix[j][i]
-    if sumL > matrix[i][i] or sumC > matrix[i][i]:
-      return False
+    """ "Calculates wether a given matrix is diagonally dominant"""
     sumL = 0
     sumC = 0
-  return True
+    for i in range(0, matrix[0].size, 1):
+        for j in range(0, matrix[0].size, 1):
+            if i != j:
+                sumL += matrix[i][j]
+                sumC += matrix[j][i]
+        if sumL > matrix[i][i] or sumC > matrix[i][i]:
+            return False
+        sumL = 0
+        sumC = 0
+    return True
+
 
 def __symmetric(matrix):
-  if( matrix.any() != np.transpose(matrix).any()):
-    return False
-  return True
+    if matrix.any() != np.transpose(matrix).any():
+        return False
+    return True
+
 
 def __eucNorm(vector):
-  """Calculates the euclidian norm of a given matrix"""
-  eucNorm = 0
-  for i in range(0, vector.size, 1):
-      eucNorm += pow(vector[i], 2)
-  return(sqrt(eucNorm))
+    """Calculates the euclidian norm of a given matrix"""
+    eucNorm = 0
+    for i in range(0, vector.size, 1):
+        eucNorm += pow(vector[i], 2)
+    return sqrt(eucNorm)
+
 
 def __infNorm(vector):
-  """Calculates the infinite norm of a given matrix"""
-  infNorm = 0
-  for i in range(0, vector.size, 1):
-      if abs(vector[i]) > infNorm:
-        infNorm = abs(vector[i])
-  return(infNorm)
+    """Calculates the infinite norm of a given matrix"""
+    infNorm = 0
+    for i in range(0, vector.size, 1):
+        if abs(vector[i]) > infNorm:
+            infNorm = abs(vector[i])
+    return infNorm
+
 
 def luDec(matrix, vector, detCod):
-  """Solves a given linear equation system through the LU Decomposition
-  Optional: calculates the determinant of the A matrix of the system"""
-  try:
-    for k in range (0, matrix[0].size - 1, 1):
-      for i in range (k+1, matrix[0].size, 1):
-        matrix[i][k] = (matrix[i][k])/(matrix[k][k])
-      for j in range (k+1, matrix[0].size, 1):
-        for l in range (k+1, matrix[0].size, 1):
-          matrix[l][j] = matrix[l][j]-(matrix[l][k]*matrix[k][j])
-  except:
-    return ['Unable to complete LU decomposition. Matrix is singular.']
-  else:
-    y = __fwdSub(matrix, vector)
-    x = __retSub(matrix, y)
-    result = [
-      "X vector: " + str(x)
-    ]
-    if detCod>0:
-      det = __detTrg(matrix)
-      result.append(
-        "Determinant: " + str(det)
-      )
+    """Solves a given linear equation system through the LU Decomposition
+    Optional: calculates the determinant of the A matrix of the system"""
+    try:
+        for k in range(0, matrix[0].size - 1, 1):
+            for i in range(k + 1, matrix[0].size, 1):
+                matrix[i][k] = (matrix[i][k]) / (matrix[k][k])
+            for j in range(k + 1, matrix[0].size, 1):
+                for l in range(k + 1, matrix[0].size, 1):
+                    matrix[l][j] = matrix[l][j] - (matrix[l][k] * matrix[k][j])
+    except:
+        return ["Unable to complete LU decomposition. Matrix is singular."]
+    else:
+        y = __fwdSub(matrix, vector)
+        x = __retSub(matrix, y)
+        result = ["X vector: " + str(x)]
+        if detCod > 0:
+            det = __detTrg(matrix)
+            result.append("Determinant: " + str(det))
 
-  return result
-  
+    return result
+
+
 def choleskyDec(matrix, vector):
-  """Solves a given linear equation system through the Cholesky Decomposition"""
-  try:
-    lMatrix = np.zeros([matrix[0].size,matrix[0].size], dtype=float)
-    for i in range(0, matrix[0].size, 1):
-      lMatrix[i][i] = sqrt(matrix[i][i] - sum((pow(lMatrix[i][k], 2)) for k in range(0, i)))
-      for j in range (i+1, matrix[0].size, 1):
-        lMatrix[j][i] = (1/(lMatrix[i][i]))*(matrix[i][j] - sum((lMatrix[i][k]*lMatrix[j][k]) for k in range(0, i)))
-  except:
-    return ['Unable to complete Cholesky Decomposition. Matrix is not symmetric positive definite.']
-  else:
-    y = np.zeros([vector.size], dtype=float)
-    y[0] = vector[0]/lMatrix[0][0]
-    for i in range (1, vector.size, 1):
-      y[i] = (vector[i] - sum((y[j]*lMatrix[i][j]) for j in range(0, i)))/lMatrix[i][i]
+    """Solves a given linear equation system through the Cholesky Decomposition"""
+    try:
+        lMatrix = np.zeros([matrix[0].size, matrix[0].size], dtype=float)
+        for i in range(0, matrix[0].size, 1):
+            lMatrix[i][i] = sqrt(
+                matrix[i][i] - sum((pow(lMatrix[i][k], 2)) for k in range(0, i))
+            )
+            for j in range(i + 1, matrix[0].size, 1):
+                lMatrix[j][i] = (1 / (lMatrix[i][i])) * (
+                    matrix[i][j]
+                    - sum((lMatrix[i][k] * lMatrix[j][k]) for k in range(0, i))
+                )
+    except:
+        return [
+            "Unable to complete Cholesky Decomposition. Matrix is not symmetric positive definite."
+        ]
+    else:
+        y = np.zeros([vector.size], dtype=float)
+        y[0] = vector[0] / lMatrix[0][0]
+        for i in range(1, vector.size, 1):
+            y[i] = (
+                vector[i] - sum((y[j] * lMatrix[i][j]) for j in range(0, i))
+            ) / lMatrix[i][i]
 
-    x = np.zeros([y.size], dtype=float)
-    x[y.size-1] = y[y.size-1]/lMatrix[y.size-1][y.size-1]
-    for i in range (y.size - 2, -1, -1):
-      x[i] = (y[i] - sum((x[j]*lMatrix[j][i]) for j in range(y.size-1, i, -1)))/lMatrix[i][i]
+        x = np.zeros([y.size], dtype=float)
+        x[y.size - 1] = y[y.size - 1] / lMatrix[y.size - 1][y.size - 1]
+        for i in range(y.size - 2, -1, -1):
+            x[i] = (
+                y[i] - sum((x[j] * lMatrix[j][i]) for j in range(y.size - 1, i, -1))
+            ) / lMatrix[i][i]
+
+        result = ["X vector: " + str(x)]
+
+        return result
+
+
+def itrJacobi(matrix, vector, tolm):
+    """Solves a given linear equation system through the Jacobi Iteration"""
+    try:
+        result = []
+        if __diagDom(matrix) == False:
+            result.append(
+                "Matrix is not diagonal dominant. Convergence not guaranteed."
+            )
+
+        x0 = np.zeros([vector.size], dtype=float)
+        x = np.zeros([vector.size], dtype=float)
+        cont = 0
+        res = 1
+        resHist = []
+
+        while res > tolm:
+            for i in range(0, vector.size, 1):
+                x[i] = (
+                    vector[i]
+                    - sum(
+                        (matrix[i][j] * x0[j] if j != i else 0)
+                        for j in range(0, vector.size, 1)
+                    )
+                ) / matrix[i][i]
+            res = __eucNorm(np.subtract(x, x0)) / __eucNorm(x)
+            resHist.append(res)
+            x0 = np.copy(x)
+            cont += 1
+
+        result.append("X vector: " + str(x))
+        result.append("Number of iterations: " + str(cont))
+        result.append("Error History: ")
+        result.append(resHist)
+
+    except:
+        result.append("Unable to complete operation. Could not converge.")
+
+    return result
+
+
+def itrGaussSeidel(matrix, vector, tolm):
+    """Solves a given linear equation system through the Gauss-Seidel Iteration"""
+    try:
+        result = []
+        if __diagDom(matrix) == False:
+            result.append(
+                "Matrix is not diagonal dominant. Convergence not guaranteed."
+            )
+
+        x0 = np.zeros([vector.size], dtype=float)
+        x = np.zeros([vector.size], dtype=float)
+        cont = 0
+        res = 1
+        resHist = []
+
+        while res > tolm:
+            for i in range(0, vector.size, 1):
+                x[i] = (
+                    vector[i]
+                    - sum(
+                        (matrix[i][j] * x[j] if j != i else 0)
+                        for j in range(0, vector.size, 1)
+                    )
+                ) / matrix[i][i]
+            res = __eucNorm(np.subtract(x, x0)) / __eucNorm(x)
+            resHist.append(res)
+            x0 = np.copy(x)
+            cont += 1
+
+        result.append("X vector: " + str(x))
+        result.append("Number of iterations: " + str(cont))
+        result.append("Error History: ")
+        result.append(resHist)
+
+    except:
+        result.append("Unable to complete operation. Could not converge.")
+
+    return result
+
+
+def powerMet(matrix, tolm):
+    x = np.full(matrix[0].size, 1)
+    x[0] = 1
+    ups0 = __infNorm(x)
+    cont = 0
+    res = 1
+    resHist = []
+    result = []
+
+    while res > tolm:
+        y = np.matmul(matrix, x)
+        ups1 = __infNorm(y)
+        res = abs(ups1 - ups0) / ups1
+        if res > tolm:
+            cont += 1
+            x = y / ups1
+            ups0 = ups1
+            resHist.append(res)
 
     result = [
-      "X vector: " + str(x)
+        "Autovetor for autovalor(y)={:.3f}: ".format(ups1) + str(x),
+        "Number of iterations: " + str(cont),
+        "Error History: ",
+        resHist,
     ]
 
     return result
 
-def itrJacobi(matrix, vector, tolm):
-  """Solves a given linear equation system through the Jacobi Iteration"""
-  try:
-    result = []
-    if (__diagDom(matrix) == False):
-      result.append('Matrix is not diagonal dominant. Convergence not guaranteed.')
-
-    x0 = np.zeros([vector.size], dtype=float)
-    x = np.zeros([vector.size], dtype=float)
-    cont = 0
-    res = 1
-    resHist = []
-
-    while(res > tolm):
-      for i in range(0, vector.size, 1):
-        x[i] = (vector[i] - sum((matrix[i][j]*x0[j] if j!=i else 0) for j in range (0, vector.size, 1)))/matrix[i][i]
-      res = __eucNorm(np.subtract(x, x0))/__eucNorm(x)
-      resHist.append(res)
-      x0 = np.copy(x)
-      cont += 1
-  
-    result.append(
-      'X vector: ' + str(x)
-    )
-    result.append(
-      'Number of iterations: ' + str(cont)
-    )
-    result.append(
-      'Error History: '
-    )
-    result.append(
-      resHist
-    )
-
-  except:
-    result.append('Unable to complete operation. Could not converge.')
-  
-  return result
-
-def itrGaussSeidel(matrix, vector, tolm):
-  """Solves a given linear equation system through the Gauss-Seidel Iteration"""
-  try:
-    result = []
-    if (__diagDom(matrix) == False):
-      result.append('Matrix is not diagonal dominant. Convergence not guaranteed.')
-
-    x0 = np.zeros([vector.size], dtype=float)
-    x = np.zeros([vector.size], dtype=float)
-    cont = 0
-    res = 1
-    resHist = []
-    
-    while(res > tolm):
-      for i in range(0, vector.size, 1):
-        x[i] = (vector[i] - sum((matrix[i][j]*x[j] if j!=i else 0) for j in range (0, vector.size, 1)))/matrix[i][i]
-      res = __eucNorm(np.subtract(x, x0))/__eucNorm(x)
-      resHist.append(res)
-      x0 = np.copy(x)
-      cont += 1
-    
-    result.append(
-      'X vector: ' + str(x)
-    )
-    result.append(
-      'Number of iterations: ' + str(cont)
-    )
-    result.append(
-      'Error History: '
-    )
-    result.append(
-      resHist
-    )
-
-  except:
-    result.append(
-      'Unable to complete operation. Could not converge.'
-    )
-  
-  return result
-
-def powerMet(matrix, tolm):
-  x = np.full(matrix[0].size, 1)
-  x[0] = 1
-  ups0 = __infNorm(x)
-  cont = 0
-  res = 1
-  resHist = []
-  result = []
-  
-  while(res > tolm):
-    y = np.matmul(matrix, x)
-    ups1 = __infNorm(y)
-    res = abs(ups1 - ups0)/ups1
-    if res>tolm:
-      cont += 1
-      x = y/ups1
-      ups0 = ups1
-      resHist.append(res)
-  
-  result = [
-    'Autovetor for autovalor(y)={:.3f}: '.format(ups1) + str(x),
-    'Number of iterations: ' + str(cont),
-    'Error History: ',
-    resHist
-  ]
-
-  return result
 
 def jacobiMet(matrix, tolm, detCod):
-  if(__symmetric(matrix) == False):
-    return['Could not complete Jacobi Method. Matrix is not symmetric.']
-  else:
-    pMatrix = np.zeros([matrix[0].size, matrix[0].size], dtype=float)
-    aMatrix = np.copy(matrix)
-    xMatrix = np.zeros([matrix[0].size, matrix[0].size], dtype=float)
-    for i in range(0, xMatrix[0].size, 1):
-      xMatrix[i][i] = 1
+    if __symmetric(matrix) == False:
+        return ["Could not complete Jacobi Method. Matrix is not symmetric."]
+    else:
+        pMatrix = np.zeros([matrix[0].size, matrix[0].size], dtype=float)
+        aMatrix = np.copy(matrix)
+        xMatrix = np.zeros([matrix[0].size, matrix[0].size], dtype=float)
+        for i in range(0, xMatrix[0].size, 1):
+            xMatrix[i][i] = 1
 
-    cont = 0
-    o = 0
-    maximum = __maxNonDig(aMatrix)[0]
-    line = __maxNonDig(aMatrix)[1]
-    column = __maxNonDig(aMatrix)[2]
+        cont = 0
+        o = 0
+        maximum = __maxNonDig(aMatrix)[0]
+        line = __maxNonDig(aMatrix)[1]
+        column = __maxNonDig(aMatrix)[2]
 
-    while(maximum > tolm):
-      cont += 1
-      
-      pMatrix = np.zeros([matrix[0].size, matrix[0].size], dtype=float)
+        while maximum > tolm:
+            cont += 1
 
-      if(aMatrix[line][line] != aMatrix[column][column]):
-        o = (atan(aMatrix[line][column]/(aMatrix[line][line] - aMatrix[column][column])))/2
-      else:
-        o = pi/4
+            pMatrix = np.zeros([matrix[0].size, matrix[0].size], dtype=float)
 
-      pMatrix[line][column] = -sin(o)
-      pMatrix[column][line] = sin(o)
-      for i in range(0, pMatrix[0].size, 1):
-        if i == line or i == column:
-          pMatrix[i][i] = cos(o)
-        else:
-          pMatrix[i][i] = 1
+            if aMatrix[line][line] != aMatrix[column][column]:
+                o = (
+                    atan(
+                        aMatrix[line][column]
+                        / (aMatrix[line][line] - aMatrix[column][column])
+                    )
+                ) / 2
+            else:
+                o = pi / 4
 
-      aMatrix = np.matmul(np.matmul(np.transpose(pMatrix), aMatrix), pMatrix)
-      xMatrix = np.matmul(xMatrix, pMatrix)
+            pMatrix[line][column] = -sin(o)
+            pMatrix[column][line] = sin(o)
+            for i in range(0, pMatrix[0].size, 1):
+                if i == line or i == column:
+                    pMatrix[i][i] = cos(o)
+                else:
+                    pMatrix[i][i] = 1
 
-      maximum = __maxNonDig(aMatrix)[0]
-      line = __maxNonDig(aMatrix)[1]
-      column = __maxNonDig(aMatrix)[2]
+            aMatrix = np.matmul(np.matmul(np.transpose(pMatrix), aMatrix), pMatrix)
+            xMatrix = np.matmul(xMatrix, pMatrix)
 
-  result = [
-    'A Matrix: ',
-    aMatrix,
-    'X Matrix: ',
-    xMatrix,
-     'Number of iterations: ' + str(cont)
-  ]
+            maximum = __maxNonDig(aMatrix)[0]
+            line = __maxNonDig(aMatrix)[1]
+            column = __maxNonDig(aMatrix)[2]
 
-  if detCod>0:
-    det = __detTrg(aMatrix)
-    result.append(
-      'Determinant: ' + str(det)
+    result = [
+        "A Matrix: ",
+        aMatrix,
+        "X Matrix: ",
+        xMatrix,
+        "Number of iterations: " + str(cont),
+    ]
+
+    if detCod > 0:
+        det = __detTrg(aMatrix)
+        result.append("Determinant: " + str(det))
+
+    return result
+
+
+def interpolation(x, x_arr, y_arr):
+    """Performs Lagrange interpolation on given x,y pairs"""
+    print(
+        f"starting interpolation with \nx_arr = {x_arr} and \ny_arr = {y_arr}\nx = {x}"
     )
+    n = len(x_arr)
+    phi = 1
+    y = 0
+    for i in range(0, n):
+        for j in range(0, n):
+            if j != i:
+                phi *= (x - x_arr[j]) / (x_arr[i] - x_arr[j])
+        y += phi * y_arr[i]
+        phi = 1
+    print(f"y = {y}")
+    return y
 
-  return result
 
-def interpolation():
-  print('')
+def regression(x, x_arr, y_arr):
+    """Performs multilinear regression on given x,y pairs"""
+    print(
+        f"starting interpolation with \nx_arr = {x_arr} and \ny_arr = {y_arr}\nx = {x}"
+    )
+    n = len(x_arr)
+    p_matrix = np.zeros([n, 2], dtype=float)
+    y_vector = np.zeros([n], dtype=float)
+    for i in range(0, n):
+        p_matrix[i][0] = 1 / math.pow(math.e, x_arr[i])
+        p_matrix[i][1] = math.log(x_arr[i], math.e)
+        y_vector[i] = y_arr[i]
 
-def regression():
- print('')
+    p_matrix_trans = np.transpose(p_matrix)
+    a_matrix = np.dot(p_matrix_trans, p_matrix_trans)
+    c_matrix = np.dot(p_matrix_trans, y_vector)
+    inv_a_matrix = np.linalg.inv(a_matrix)
+    b_matrix = np.dot(inv_a_matrix, c_matrix)
 
+    y = (b_matrix[0] / math.e**x) + b_matrix[1] * math.log(x, math.e)
+    print(f"y = {y}")
 
+    return y
