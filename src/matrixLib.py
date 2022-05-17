@@ -26,12 +26,6 @@ def __detTrg(matrix):
     det *= matrix[i][i]
   return det
 
-def __eigenDet(eigen):
-  det = 1
-  for value in eigen:
-    det *= eigen
-  return det
-
 def __maxNonDig(matrix):
   max = 0
   line = 0
@@ -275,8 +269,6 @@ def jacobiMet(matrix, tolm, detCod):
         else:
           pMatrix[i][i] = 1
 
-      print(pMatrix)
-
       aMatrix = np.matmul(np.matmul(np.transpose(pMatrix), aMatrix), pMatrix)
       xMatrix = np.matmul(xMatrix, pMatrix)
 
@@ -292,11 +284,11 @@ def jacobiMet(matrix, tolm, detCod):
      'Number of iterations: ' + str(cont)
   ]
 
-  # if detCod>0:
-  #   det = __eigenDet(x)
-  #   result.append(
-  #     'Determinant: ' + str(det)
-  #   )
+  if detCod>0:
+    det = __detTrg(aMatrix)
+    result.append(
+      'Determinant: ' + str(det)
+    )
 
   return result
 
