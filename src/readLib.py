@@ -54,9 +54,9 @@ def readTask2(file):
     tolm = float(f.readline())
 
     if(icod==1):
-      result = mtx.powerMet(aMatrix, tolm)
+      result = mtx.powerMet(aMatrix, tolm, idet)
     elif(icod==2):
-      result = mtx.jacobiMet(aMatrix, tolm)
+      result = mtx.jacobiMet(aMatrix, tolm, idet)
 
   return result
 

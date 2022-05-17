@@ -26,6 +26,12 @@ def __detTrg(matrix):
     det += matrix[i][i]
   return det
 
+def __eigenDet(eigen):
+  det = 1
+  for i in range(0, eigen.size, 1):
+    det *= eigen
+  return det
+
 def __diagDom(matrix):
   """"Calculates wether a given matrix is diagonally dominant"""
   sumL = 0
@@ -132,11 +138,13 @@ def itrJacobi(matrix, vector, tolm):
     x = np.zeros([vector.size], dtype=float)
     cont = 0
     res = 1
+    resHist = []
 
     while(res > tolm):
       for i in range(0, vector.size, 1):
         x[i] = (vector[i] - sum((matrix[i][j]*x0[j] if j!=i else 0) for j in range (0, vector.size, 1)))/matrix[i][i]
       res = __eucNorm(np.subtract(x, x0))/__eucNorm(x)
+      resHist.append(res)
       x0 = np.copy(x)
       cont += 1
   
@@ -147,7 +155,10 @@ def itrJacobi(matrix, vector, tolm):
       'Number of iterations: ' + str(cont)
     )
     result.append(
-      'Residue: ' + str(res)
+      'Error History: '
+    )
+    result.append(
+      resHist
     )
 
   except:
@@ -166,10 +177,13 @@ def itrGaussSeidel(matrix, vector, tolm):
     x = np.zeros([vector.size], dtype=float)
     cont = 0
     res = 1
+    resHist = []
+    
     while(res > tolm):
       for i in range(0, vector.size, 1):
         x[i] = (vector[i] - sum((matrix[i][j]*x[j] if j!=i else 0) for j in range (0, vector.size, 1)))/matrix[i][i]
       res = __eucNorm(np.subtract(x, x0))/__eucNorm(x)
+      resHist.append(res)
       x0 = np.copy(x)
       cont += 1
     
@@ -180,7 +194,10 @@ def itrGaussSeidel(matrix, vector, tolm):
       'Number of iterations: ' + str(cont)
     )
     result.append(
-      'Residue: ' + str(res)
+      'Error History: '
+    )
+    result.append(
+      resHist
     )
 
   except:
@@ -190,7 +207,7 @@ def itrGaussSeidel(matrix, vector, tolm):
   
   return result
 
-def powerMet(matrix, tolm):
+def powerMet(matrix, tolm, detCod):
   x = np.full(matrix[0].size, 1)
   x[0] = 1
   ups0 = __infNorm(x)
@@ -213,9 +230,15 @@ def powerMet(matrix, tolm):
     'Residue: ' + str(res)
   ]
 
+  if detCod>0:
+    det = __eigenDet(x)
+    result.append(
+      'Determinant: ' + str(det)
+    )
+
   return result
 
-def jacobiMet(matrix, tolm):
+def jacobiMet(matrix, tolm, detCod):
   if(__symmetric(matrix) == False):
     return['Could not complete Jacobi Method. Matrix is not symmetric.']
   else:
@@ -258,6 +281,16 @@ def jacobiMet(matrix, tolm):
       apmult = np.matmul()
       if(__diagonal(pMatrix, tolm) == False):
         aMatrix = pMatrix
+  
+  result = []
+
+  if detCod>0:
+    det = __eigenDet(x)
+    result.append(
+      'Determinant: ' + str(det)
+    )
+
+  return result
 
 def interpolation():
   print('')
