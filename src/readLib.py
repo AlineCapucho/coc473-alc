@@ -54,7 +54,9 @@ def readTask2(file):
     tolm = float(f.readline())
 
     if(icod==1):
-      result = mtx.powerMet(aMatrix, tolm, idet)
+      result = mtx.powerMet(aMatrix, tolm)
+      if(idet>0):
+        result.append("Warning! Could not calculate determinant.")
     elif(icod==2):
       result = mtx.jacobiMet(aMatrix, tolm, idet)
 

@@ -21,14 +21,14 @@ def __retSub(matrix, vector):
 
 def __detTrg(matrix):
   """Calculates the determinant for an upper or lower triangular matrix"""
-  det = 0
+  det = 1
   for i in range(0, matrix[0].size, 1):
-    det += matrix[i][i]
+    det *= matrix[i][i]
   return det
 
 def __eigenDet(eigen):
   det = 1
-  for i in range(0, eigen.size, 1):
+  for value in eigen:
     det *= eigen
   return det
 
@@ -207,12 +207,13 @@ def itrGaussSeidel(matrix, vector, tolm):
   
   return result
 
-def powerMet(matrix, tolm, detCod):
+def powerMet(matrix, tolm):
   x = np.full(matrix[0].size, 1)
   x[0] = 1
   ups0 = __infNorm(x)
   cont = 0
   res = 1
+  resHist = []
   result = []
   
   while(res > tolm):
@@ -223,18 +224,14 @@ def powerMet(matrix, tolm, detCod):
       cont += 1
       x = y/ups1
       ups0 = ups1
+      resHist.append(res)
   
   result = [
-    'X vector:' + str(x),
+    'Autovector for autovalue(y)={:.3f}: '.format(ups1) + str(x),
     'Number of iterations: ' + str(cont),
-    'Residue: ' + str(res)
+    'Error History: ',
+    resHist
   ]
-
-  if detCod>0:
-    det = __eigenDet(x)
-    result.append(
-      'Determinant: ' + str(det)
-    )
 
   return result
 
