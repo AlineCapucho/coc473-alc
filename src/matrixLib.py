@@ -300,6 +300,9 @@ def jacobiMet(matrix, tolm, detCod):
             aMatrix = np.matmul(np.matmul(np.transpose(pMatrix), aMatrix), pMatrix)
             xMatrix = np.matmul(xMatrix, pMatrix)
 
+            print(pMatrix)
+            print(aMatrix)
+            print(xMatrix)
             maximum = __maxNonDig(aMatrix)[0]
             line = __maxNonDig(aMatrix)[1]
             column = __maxNonDig(aMatrix)[2]
