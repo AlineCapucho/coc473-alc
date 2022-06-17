@@ -1,0 +1,2 @@
+X vector: [ 1.  0. -1.]
+Warning! Could not calculate determinant.
