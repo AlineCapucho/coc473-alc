@@ -13,13 +13,13 @@ def __getNlFunction(c, theta1, theta2):
   return result
 
 
-def __getNlFunctionEx(c):
-  x1 = c[0]
-  x2 = c[1]
-  f1 = x1 + 2*x2 - 2
-  f2 = (x1**2) + 4*(x2**2) - 4
-  result = [f1,f2]
-  return result
+# def __getNlFunctionEx(c):
+#   x1 = c[0]
+#   x2 = c[1]
+#   f1 = x1 + 2*x2 - 2
+#   f2 = (x1**2) + 4*(x2**2) - 4
+#   result = [f1,f2]
+#   return result
 
 
 def __getJacobian(c):
@@ -44,18 +44,18 @@ def __getJacobian(c):
   return result
 
 
-def __getJacobianEx(c):
-  x1 = c[0]
-  x2 = c[1]
+# def __getJacobianEx(c):
+#   x1 = c[0]
+#   x2 = c[1]
 
-  f1x1 = 1
-  f1x2 = 2
-  f2x1 = 2*x1
-  f2x2 = 8*x2
+#   f1x1 = 1
+#   f1x2 = 2
+#   f2x1 = 2*x1
+#   f2x2 = 8*x2
 
-  result = [[f1x1,f1x2],[f2x1,f2x2]]
+#   result = [[f1x1,f1x2],[f2x1,f2x2]]
 
-  return result
+#   return result
 
 
 def __getApprJacobian(jacAppr, y, deltaX):
@@ -64,10 +64,7 @@ def __getApprJacobian(jacAppr, y, deltaX):
   term1 = np.matmul(jacAppr, deltaX) #jacAppr*deltaX
   term2 = y+term1 # y - jacAppr*deltaX
   term3 = np.outer(term2, deltaX) # (y - jacAppr*deltaX)*(deltaX)T
-  # term4 = np.outer(deltaX, deltaX) # (deltaX)T*deltaX
   term4 = np.matmul(deltaX, deltaX) # (deltaX)T*deltaX
-  # term4 = np.multiply(deltaX, deltaX) # (deltaX)T*deltaX
-  # term4 = np.dot(deltaX, deltaX) # (deltaX)T*deltaX
   term5 = np.divide(term3,term4)
 
   result = jacAppr - term5
@@ -104,14 +101,14 @@ def newton(theta1, theta2, tolm):
 
 
 def broyden(theta1, theta2, tolm):
-  nInter = 1000
+  nInter = 10000
   count = 0
-  x0 = np.array([2, 3])
-  x1 = np.array([0]*2)
-  y = np.array([0]*2)
-  deltaX = np.array([0]*2)
-  func0 = np.array(__getNlFunctionEx(x0))
-  jacAppr = np.array(__getJacobianEx(x0))
+  x0 = np.array([1, 0, 4])
+  x1 = np.array([0]*3)
+  y = np.array([0]*3)
+  deltaX = np.array([0]*3)
+  func0 = np.array(__getNlFunction(x0, theta1, theta2))
+  jacAppr = np.array(__getJacobian(x0))
   
   while(count < nInter):
     deltaX = np.matmul(-np.linalg.inv(jacAppr),func0)
@@ -122,10 +119,9 @@ def broyden(theta1, theta2, tolm):
     else:
       tol = 0
     if(tolm >= tol):
-      print(x1)
       return x1
 
-    func1 = np.array(__getNlFunctionEx(x1))
+    func1 = np.array(__getNlFunction(x1, theta1, theta2))
     y = func1 - func0
     jacAppr = __getApprJacobian(jacAppr, y, deltaX)
 
