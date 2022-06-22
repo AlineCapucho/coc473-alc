@@ -13,15 +13,6 @@ def __getNlFunction(c, theta1, theta2):
   return result
 
 
-# def __getNlFunctionEx(c):
-#   x1 = c[0]
-#   x2 = c[1]
-#   f1 = x1 + 2*x2 - 2
-#   f2 = (x1**2) + 4*(x2**2) - 4
-#   result = [f1,f2]
-#   return result
-
-
 def __getJacobian(c):
   c2 = c[0]
   c3 = c[1]
@@ -44,20 +35,6 @@ def __getJacobian(c):
   return result
 
 
-# def __getJacobianEx(c):
-#   x1 = c[0]
-#   x2 = c[1]
-
-#   f1x1 = 1
-#   f1x2 = 2
-#   f2x1 = 2*x1
-#   f2x2 = 8*x2
-
-#   result = [[f1x1,f1x2],[f2x1,f2x2]]
-
-#   return result
-
-
 def __getApprJacobian(jacAppr, y, deltaX):
   deltaX = -deltaX
 
@@ -71,10 +48,11 @@ def __getApprJacobian(jacAppr, y, deltaX):
 
   return result
 
+
 def newton(theta1, theta2, tolm):
   nInter = 1000
   count = 0
-  x0 = [1, 0, 4]
+  x0 = [1, 0, 0]
   x1 = [0]*3
   s = [0]*3
   tol = [0]*3
@@ -101,9 +79,9 @@ def newton(theta1, theta2, tolm):
 
 
 def broyden(theta1, theta2, tolm):
-  nInter = 10000
+  nInter = 1000
   count = 0
-  x0 = np.array([1, 0, 4])
+  x0 = np.array([1, 0, 0])
   x1 = np.array([0]*3)
   y = np.array([0]*3)
   deltaX = np.array([0]*3)
@@ -112,7 +90,7 @@ def broyden(theta1, theta2, tolm):
   
   while(count < nInter):
     deltaX = np.matmul(-np.linalg.inv(jacAppr),func0)
-    x1 = x0 + deltaX
+    x1 = x0 - deltaX
 
     if(mtx.__eucNorm(x1)!=0):
       tol = mtx.__eucNorm(deltaX)/mtx.__eucNorm(x1)
@@ -121,12 +99,12 @@ def broyden(theta1, theta2, tolm):
     if(tolm >= tol):
       return x1
 
-    func1 = np.array(__getNlFunction(x1, theta1, theta2))
+    func1 = -np.array(__getNlFunction(x1, theta1, theta2))
     y = func1 - func0
     jacAppr = __getApprJacobian(jacAppr, y, deltaX)
 
-    x0 = x1
-    func0 = func1
+    x0 =  x1.copy()
+    func0 = func1.copy()
 
     count += 1
 
