@@ -112,6 +112,26 @@ def luDec(matrix, vector, detCod):
     return result
 
 
+def luDecMod(matrix, vector, detCod):
+    """Solves a given linear equation system through the LU Decomposition
+    Optional: calculates the determinant of the A matrix of the system"""
+    try:
+        for k in range(0, matrix[0].size - 1, 1):
+            for i in range(k + 1, matrix[0].size, 1):
+                matrix[i][k] = (matrix[i][k]) / (matrix[k][k])
+            for j in range(k + 1, matrix[0].size, 1):
+                for l in range(k + 1, matrix[0].size, 1):
+                    matrix[l][j] = matrix[l][j] - (matrix[l][k] * matrix[k][j])
+    except:
+        return ["Unable to complete LU decomposition. Matrix is singular."]
+    else:
+        y = __fwdSub(matrix, vector)
+        x = __retSub(matrix, y)
+        result = x
+
+    return result
+
+
 def choleskyDec(matrix, vector):
     """Solves a given linear equation system through the Cholesky Decomposition"""
     try:
