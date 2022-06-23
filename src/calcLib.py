@@ -58,6 +58,19 @@ def __getRootFunction(c,x):
 
   return f
 
+def __getRootDiffFunction(c,x):
+  c1 = float(c[0])
+  c2 = float(c[1])
+  c3 = float(c[2])
+  c4 = float(c[3])
+
+  p1 = ((c1*c2)**(c2*x))*np.log(c1)
+  p2 = c3*c4*(x**(c4-1))
+
+  df = p1 + p2
+
+  return df
+
 
 def newton(theta1, theta2, tolm):
   nInter = 1000
@@ -144,7 +157,20 @@ def rootBisect(c, a, b, tolm):
 
 
 def rootNewton(c, a, b, tolm):
-  pass
+  x0 = (a+b)/2
+  x1 = 0
+  nInter = 1000
+  count = 0
+  while(count < nInter):
+    x1 = x0 - (__getRootFunction(c,x0)/__getRootDiffFunction(c,x0))
+
+    tol = abs(x1 - x0)
+    if(tol <= tolm):
+      return [x1]
+    x0 = x1
+    count += 1
+
+  raise Exception('Convergence unreachable.')
 
 
 def integralGauss(c, a, b, numP, tolm):
