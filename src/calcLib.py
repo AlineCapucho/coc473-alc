@@ -111,19 +111,34 @@ def broyden(theta1, theta2, tolm):
   raise Exception('Convergence unreachable.')
 
 
-def root():
+def rootBisect(c, a, b, tolm):
   pass
 
 
-def integral():
+def rootNewton(c, a, b, tolm):
   pass
 
 
-def diffDf():
+def integralGauss(c, a, b, numP, tolm):
   pass
 
 
-def diffRe():
+def integralPol(c, a, b, numP, tolm):
+  pass
+
+
+def diffSteps(c, deltaX, tolm):
+  pass
+
+
+def diffStepBack(c, deltaX, tolm):
+  pass
+
+
+def diffCentral(c, deltaX, tolm):
+  pass
+
+def diffRe(c, deltaX_1, deltaX_2, tolm):
   pass
 
 

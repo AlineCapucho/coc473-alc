@@ -1,3 +1,4 @@
+from xml.etree.ElementTree import C14NWriterTarget
 import numpy as np
 import calcLib as calc
 
@@ -29,24 +30,48 @@ def readTask1(file):
 
 def readTask2(file):
     with open(file, "r") as f:
-        order = int(f.readline())
         icod = int(f.readline())
-        idet = float(f.readline())
-        aMatrix = np.zeros([order, order], dtype=float)
-        for i in range(0, order, 1):
-            line = (f.readline()).split()
-            for j in range(0, order, 1):
-                if j != order:
-                    aMatrix[i][j] = float(line[j])
+        if(icod != 4):
+            icod2 = int(f.readline())
+
+        c = (f.readline()).split()
+
+        if(icod == 1 or icod == 2):
+            limits = (f.readline()).split()
+            a = float(limits[0])
+            b = float(limits[1])
+            if(icod == 2):
+                numP = int(f.readline())
+
+        if(icod == 3):
+            deltaX = float(f.readline())
+        
+        if(icod == 4):
+            deltaX_1 = float(f.readline())
+            deltaX_2 = float(f.readline())
+        
         tolm = float(f.readline())
 
         if icod == 1:
-            result = mtx.powerMet(aMatrix, tolm)
-            if idet > 0:
-                result.append("Warning! Could not calculate determinant.")
+            if icod2 == 1:
+                result = calc.rootBisect(c, a, b, tolm)
+            if icod2 == 2:
+                result = calc.rootNewton(c, a, b, tolm)
         elif icod == 2:
-            result = mtx.jacobiMet(aMatrix, tolm, idet)
-
+            if icod2 == 1:
+                result = calc.integralGauss(c, a, b, numP, tolm)
+            if icod2 == 2:
+                result = calc.integralPol(c, a, b, numP, tolm)
+        elif icod == 3:
+            if icod2 == 1:
+                result = calc.diffSteps(c, deltaX, tolm)
+            if icod2 == 2:
+                result = calc.diffStepBack(c, deltaX, tolm)
+            if icod2 == 3:
+                result = calc.diffCentral(c, deltaX, tolm)
+        elif icod == 4:
+            result = calc.diffRe(c, deltaX_1, deltaX_2, tolm)
+            
     return result
 
 def readTask3(file):
