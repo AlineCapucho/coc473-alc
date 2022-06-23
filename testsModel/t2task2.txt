@@ -1,0 +1,57 @@
+1 - 1: raiz, biseção
+icod1
+icod2
+c1 c2 c3 c4
+a b
+tolm
+
+1 - 2: raiz, newton
+icod1
+icod2
+c1 c2 c3 c4
+a b
+tolm
+
+2 - 1: integral, quadratura de Gauss
+icod1
+icod2
+c1 c2 c3 c4
+a b
+numero de pontos de integracao
+tolm
+
+2 - 2: integral, quadratura polinomial
+icod1
+icod2
+c1 c2 c3 c4
+a b
+numero de pontos de integracao
+tolm
+
+3 - 1: derivada, diferenças finitas passo a frente,
+icod1
+icod2
+c1 c2 c3 c4
+deltaX
+tolm
+
+3 - 2: derivada, diferenças passo atrás
+icod1
+icod2
+c1 c2 c3 c4
+deltaX
+tolm
+
+3 - 3: derivada, diferença central
+icod1
+icod2
+c1 c2 c3 c4
+deltaX
+tolm
+
+4: derivada re, extrapolação de richard
+icod1
+c1 c2 c3 c4
+deltaX 1
+deltaX 2
+tolm
