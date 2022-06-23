@@ -49,6 +49,16 @@ def __getApprJacobian(jacAppr, y, deltaX):
   return result
 
 
+def __getRootFunction(c,x):
+  c1 = float(c[0])
+  c2 = float(c[1])
+  c3 = float(c[2])
+  c4 = float(c[3])
+  f = c1**(c2*x) + c3*(x**c4)
+
+  return f
+
+
 def newton(theta1, theta2, tolm):
   nInter = 1000
   count = 0
@@ -112,7 +122,25 @@ def broyden(theta1, theta2, tolm):
 
 
 def rootBisect(c, a, b, tolm):
-  pass
+  x = (a+b)/2
+  while(abs(b-a)>tolm and abs(a-b)>tolm):
+    f = __getRootFunction(c, x)
+    if(f > 0):
+      if(abs(a) > abs(b)):
+        b = x
+      else:
+        a = x
+    elif(f < 0):
+      if(abs(a) > abs(b)):
+        a = x
+      else:
+        b = x
+    else:
+      return [x]
+    
+    x = (a+b)/2
+  
+  return [x]
 
 
 def rootNewton(c, a, b, tolm):
@@ -137,6 +165,7 @@ def diffStepBack(c, deltaX, tolm):
 
 def diffCentral(c, deltaX, tolm):
   pass
+
 
 def diffRe(c, deltaX_1, deltaX_2, tolm):
   pass
