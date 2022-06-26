@@ -36,22 +36,27 @@ def readTask2(file):
 
         c = (f.readline()).split()
 
-        if(icod == 1 or icod == 2):
+        if(icod == 1):
             limits = (f.readline()).split()
             a = float(limits[0])
             b = float(limits[1])
-            if(icod == 2):
-                numP = int(f.readline())
+            tolm = float(f.readline())
+
+        if(icod == 2):
+            limits = (f.readline()).split()
+            a = float(limits[0])
+            b = float(limits[1])
+            numP = int(f.readline())
 
         if(icod == 3):
             deltaX = float(f.readline())
+            tolm = float(f.readline())
         
         if(icod == 4):
             deltaX_1 = float(f.readline())
             deltaX_2 = float(f.readline())
+            tolm = float(f.readline())
         
-        tolm = float(f.readline())
-
         if icod == 1:
             if icod2 == 1:
                 result = calc.rootBisect(c, a, b, tolm)
@@ -59,9 +64,9 @@ def readTask2(file):
                 result = calc.rootNewton(c, a, b, tolm)
         elif icod == 2:
             if icod2 == 1:
-                result = calc.integralGauss(c, a, b, numP, tolm)
+                result = calc.integralPol(c, a, b, numP)
             if icod2 == 2:
-                result = calc.integralPol(c, a, b, numP, tolm)
+                result = calc.integralGauss(c, a, b, numP)
         elif icod == 3:
             if icod2 == 1:
                 result = calc.diffSteps(c, deltaX, tolm)
