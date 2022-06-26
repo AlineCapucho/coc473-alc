@@ -569,8 +569,18 @@ def diffCentral(c, x, deltaX):
   return [result]
 
 
-def diffRe(c, deltaX_1, deltaX_2, tolm):
-  pass
+def diffRe(c, x, deltaX1, deltaX2):
+  if(deltaX1==0 or deltaX2==0):
+    return ["Unable to complete. DeltaX must be different than 0."]
+    
+  d1 = diffStepFwd(c, x, deltaX1)[0]
+  d2 = diffStepFwd(c, x, deltaX2)[0]
+
+  p = 1
+  q = deltaX1/deltaX2
+  diff = d1 + ((d1 - d2)/((q**-p)-1))
+
+  return [diff]
 
 
 def diffEq():

@@ -53,9 +53,9 @@ def readTask2(file):
             deltaX = float(f.readline())
         
         if(icod == 4):
-            deltaX_1 = float(f.readline())
-            deltaX_2 = float(f.readline())
-            tolm = float(f.readline())
+            x = float(f.readline())
+            deltaX1 = float(f.readline())
+            deltaX2 = float(f.readline())
         
         if icod == 1:
             if icod2 == 1:
@@ -75,7 +75,7 @@ def readTask2(file):
             if icod2 == 3:
                 result = calc.diffCentral(c, x, deltaX)
         elif icod == 4:
-            result = calc.diffRe(c, deltaX_1, deltaX_2, tolm)
+            result = calc.diffRe(c, x, deltaX1, deltaX2)
             
     return result
 
