@@ -1,4 +1,3 @@
-from curses import KEY_A1
 import numpy as np
 import matrixLib as mtx
 from math import sin, cos
@@ -82,6 +81,12 @@ def newton(theta1, theta2, tolm):
   s = [0]*3
   tol = [0]*3
   
+  input = [
+    f'Icod: 1',
+    f'Tetha1: {theta1}  Tetha2: {theta2}',
+    f'Tolerância máxima: {tolm}',
+  ]
+  
   while(count < nInter):
     func = np.array(__getNlFunction(x0, theta1, theta2))
     jac = np.array(__getJacobian(x0))
@@ -95,12 +100,24 @@ def newton(theta1, theta2, tolm):
 
     aux = list(filter(lambda tolValue: (tolm >= tolValue), tol))
     if len(aux) == len(tol):
-      return x1
+      return [
+        input[0],
+        input[1],
+        input[2],
+        f'Constante c2: {x1[0]}',
+        f'Constante c3: {x1[1]}',
+        f'Constante c4: {x1[2]}',
+      ]
 
     x0 = x1.copy()
     
     count += 1
-  raise Exception('Convergence unreachable.')
+  return [
+    input[0],
+    input[1],
+    input[2],
+    f'Unable to complete. Convergence unreachable in {nInter} interations.'
+    ]
 
 
 def broyden(theta1, theta2, tolm):
@@ -112,6 +129,12 @@ def broyden(theta1, theta2, tolm):
   deltaX = np.array([0]*3)
   func0 = np.array(__getNlFunction(x0, theta1, theta2))
   jacAppr = np.array(__getJacobian(x0))
+
+  input = [
+    f'Icod: {2}',
+    f'Tetha1: {theta1}  Tetha2: {theta2}',
+    f'Tolerância máxima: {tolm}',
+  ]
   
   while(count < nInter):
     deltaX = np.matmul(-np.linalg.inv(jacAppr),func0)
@@ -122,7 +145,14 @@ def broyden(theta1, theta2, tolm):
     else:
       tol = 0
     if(tolm >= tol):
-      return x1
+      return [
+        input[0],
+        input[1],
+        input[2],
+        f'Constante c2: {x1[0]}',
+        f'Constante c3: {x1[1]}',
+        f'Constante c4: {x1[2]}',
+      ]
 
     func1 = -np.array(__getNlFunction(x1, theta1, theta2))
     y = func1 - func0
@@ -133,12 +163,25 @@ def broyden(theta1, theta2, tolm):
 
     count += 1
 
-  raise Exception('Convergence unreachable.')
+  return [
+    input[0],
+    input[1],
+    input[2],
+    f'Unable to complete. Convergence unreachable in {nInter} interations.'
+    ]
 
 
 def rootBisect(c, a, b, tolm):
-  x = (a+b)/2
+  input = [
+    f'Icod 1: 1',
+    f'Icod 2: 1',
+    f'c1: {c[0]}  c2: {c[1]}  c3: {c[2]}  c4: {c[3]}',
+    f'a: {a}  b: {b}',
+    f'Tolerância máxima: {tolm}',
+  ]
+
   while(abs(b-a)>tolm and abs(a-b)>tolm):
+    x = (a+b)/2
     f = __getRootFunction(c, x)
     if(f > 0):
       if(abs(a) > abs(b)):
@@ -151,11 +194,11 @@ def rootBisect(c, a, b, tolm):
       else:
         b = x
     else:
-      return [x]
-    
-    x = (a+b)/2
+      input.append(f'Raiz: {x}')
+      return input
   
-  return [x]
+  input.append(f'Raiz: {x}')
+  return input
 
 
 def rootNewton(c, a, b, tolm):
@@ -163,16 +206,31 @@ def rootNewton(c, a, b, tolm):
   x1 = 0
   nInter = 1000
   count = 0
+
+  input = [
+    f'Icod 1: 1',
+    f'Icod 2: 2',
+    f'c1: {c[0]}  c2: {c[1]}  c3: {c[2]}  c4: {c[3]}',
+    f'a: {a}  b: {b}',
+    f'Tolerância máxima: {tolm}',
+  ]
+
   while(count < nInter):
     x1 = x0 - (__getRootFunction(c,x0)/__getRootDiffFunction(c,x0))
 
     tol = abs(x1 - x0)
     if(tol <= tolm):
-      return [x1]
+      input.append(f'Raiz: {x1}')
+      return input
     x0 = x1
     count += 1
 
-  raise Exception('Convergence unreachable.')
+  return [
+    input[0],
+    input[1],
+    input[2],
+    f'Unable to complete. Convergence unreachable in {nInter} interations.'
+  ]
 
 
 def __getIntFunction(c, x):
@@ -185,6 +243,18 @@ def __getIntFunction(c, x):
 
 
 def integralPol(c, a, b, numP):
+  input = [
+    f'Icod 1: 2',
+    f'Icod 2: 1',
+    f'c1: {c[0]}  c2: {c[1]}  c3: {c[2]}  c4: {c[3]}',
+    f'a: {a}  b: {b}',
+    f'Número de pontos de integração: {numP}'
+  ]
+
+  if (numP>10 or numP<2):
+    input.append(f'Could not complete operation. Number of points must be between 2 and 10.')
+    return input
+ 
   if b < a:
     a, b = b, a
   L = b - a
@@ -356,10 +426,23 @@ def integralPol(c, a, b, numP):
 
     result += (wi*f)
 
-  return [result]
+  input.append(f'Valor da Integral: {result}')
+  return input
 
 
 def integralGauss(c, a, b, numP):
+  input = [
+    f'Icod 1: 2',
+    f'Icod 2: 2',
+    f'c1: {c[0]}  c2: {c[1]}  c3: {c[2]}  c4: {c[3]}',
+    f'a: {a}  b: {b}',
+    f'Número de pontos de integração: {numP}'
+  ]
+
+  if (numP>10 or numP<2):
+    input.append(f'Could not complete operation. Number of points must be between 2 and 10.')
+    return input
+
   if a > b:
     a, b = b, a
   L = b - a
@@ -531,57 +614,99 @@ def integralGauss(c, a, b, numP):
 
   result = (result*L)/2
 
-  return [result]
+  input.append(f'Valor da Integral: {result}')
+  return input
 
 
 def diffStepFwd(c, x, deltaX):
+  input = [
+    f'Icod 1: 3',
+    f'Icod 2: 1',
+    f'c1: {c[0]}  c2: {c[1]}  c3: {c[2]}  c4: {c[3]}',
+    f'x: {x}',
+    f'Delta X: {deltaX}'
+  ]
+  
   if (deltaX == 0):
-    return ["Unable to complete. DeltaX must be different than 0."]
+    input.append("Unable to complete. DeltaX must be different than 0.")
+    return input
 
   fDelta = __getIntFunction(c, x+deltaX)
   f = __getIntFunction(c, x)
 
   result = (fDelta - f)/deltaX
 
-  return [result]
+  input.append(f'Valor da Derivada: {result}')
+  return input
 
 
 def diffStepBack(c, x, deltaX):
+  input = [
+    f'Icod 1: 3',
+    f'Icod 2: 2',
+    f'c1: {c[0]}  c2: {c[1]}  c3: {c[2]}  c4: {c[3]}',
+    f'x: {x}',
+    f'Delta X: {deltaX}'
+  ]
+  
   if (deltaX == 0):
-    return ["Unable to complete. DeltaX must be different than 0."]
-
+    input.append("Unable to complete. DeltaX must be different than 0.")
+    return input
+  
   fDelta = __getIntFunction(c, x-deltaX)
   f = __getIntFunction(c, x)
 
   result = (f - fDelta)/deltaX
 
-  return [result]
+  input.append(f'Valor da Derivada: {result}')
+  return input
 
 
 def diffCentral(c, x, deltaX):
-  if (deltaX == 0):
-    return ["Unable to complete. DeltaX must be different than 0."]
+  input = [
+    f'Icod 1: 3',
+    f'Icod 2: 3',
+    f'c1: {c[0]}  c2: {c[1]}  c3: {c[2]}  c4: {c[3]}',
+    f'x: {x}',
+    f'Delta X: {deltaX}'
+  ]
 
+  if (deltaX == 0):
+    input.append("Unable to complete. DeltaX must be different than 0.")
+    return input
+  
   fDelta1 = __getIntFunction(c, x+deltaX)
   fDelta2 = __getIntFunction(c, x-deltaX)
 
   result = (fDelta1 - fDelta2)/(2*deltaX)
 
-  return [result]
+  input.append(f'Valor da Derivada: {result}')
+  return input
 
 
 def diffRe(c, x, deltaX1, deltaX2):
-  if(deltaX1==0 or deltaX2==0):
-    return ["Unable to complete. DeltaX must be different than 0."]
+  input = [
+    f'Icod 1: 4',
+    f'c1: {c[0]}  c2: {c[1]}  c3: {c[2]}  c4: {c[3]}',
+    f'x: {x}',
+    f'Delta X 1: {deltaX1}',
+    f'Delta X 2: {deltaX2}'
+  ]
 
-  d1 = diffStepFwd(c, x, deltaX1)[0]
-  d2 = diffStepFwd(c, x, deltaX2)[0]
+  if (deltaX1 == 0 or deltaX2 == 0):
+    input.append("Unable to complete. DeltaX must be different than 0.")
+    return input
 
+  d1 = float(diffStepFwd(c, x, deltaX1)[5].split()[3])
+  d2 = float(diffStepFwd(c, x, deltaX2)[5].split()[3])
+  
   p = 1
   q = deltaX1/deltaX2
   diff = d1 + ((d1 - d2)/((q**-p)-1))
 
-  return [diff]
+  input.append(f'Valor da Derivada: {diff}')
+  return input
+
 
 def __getDiffEqFunc(aValues, wValues, t, c, k, m, y, yDiff1):
   a1 = float(aValues[0])
@@ -596,14 +721,29 @@ def __getDiffEqFunc(aValues, wValues, t, c, k, m, y, yDiff1):
   yDiff2 = (F - k*y - c*yDiff1)/m
   return yDiff2
 
+
 def diffEq(N, T, m, c, k, aValues, wValues):
+  input = [
+    f'Passo de Integração: {N}',
+    f'Tempo Total de Integração: {T}',
+    f'm: {m}',
+    f'c: {c}',
+    f'k: {k}',
+    f'a1: {aValues[0]}  a2: {aValues[1]}  a3: {aValues[2]}',
+    f'w1: {wValues[0]}  w2: {wValues[1]}  w3: {wValues[2]}'
+  ]
+
+  if(N==0 or T==0):
+    input.apend(f'Unable to complete operation. N==0 or T==0.')
+    return input
+
   y0 = 0
   y0Diff1 = 0
   t = 0
 
   h = T/N
 
-  while(t < T):
+  while(t <= T):
     Q1 = (h) * (y0Diff1)
     k1 = (h) * __getDiffEqFunc(aValues, wValues, t, c, k, m, (y0 + Q1), y0Diff1)
     
@@ -621,4 +761,8 @@ def diffEq(N, T, m, c, k, aValues, wValues):
       y0 = y0 + h*(y0Diff1 + (1/6*(Q1 + 2*Q2 + 2*Q3 + Q4)))
       y0Diff1 = y0Diff1 + (1/6)*(k1 + 2*k2 + 2*k3 + k4)
 
-  return [y0, t]
+  y0Diff2 = __getDiffEqFunc(aValues, wValues, t, c, k, m, y0, y0Diff1)
+
+  input.append(f'Tempo    |    Deslocamento     |    Velocidade     |    Aceleração')
+  input.append(f'{t} | {y0} | {y0Diff1} | {y0Diff2}')
+  return input
