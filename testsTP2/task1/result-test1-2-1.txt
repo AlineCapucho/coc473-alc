@@ -1,4 +1,4 @@
-Icod: 1
+Icod: 2
 Tetha1: 0.0  Tetha2: 3.0
 Tolerância máxima: 0.0001
 Constante c2: 1.0

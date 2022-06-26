@@ -1,1 +1,6 @@
-1.0
+Icod 1: 3
+Icod 2: 3
+c1: 1  c2: 1  c3: 1  c4: 1
+x: 1.0
+Delta X: 0.5
+Valor da Derivada: 1.0

@@ -1,1 +1,6 @@
-8.0698
+Icod 1: 2
+Icod 2: 2
+c1: 1  c2: 1  c3: 1  c4: 1
+a: 0.0  b: 3.14
+Número de pontos de integração: 6
+Valor da Integral: 8.0698
