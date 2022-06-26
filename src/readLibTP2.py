@@ -81,21 +81,17 @@ def readTask2(file):
 
 def readTask3(file):
     with open(file, "r") as f:
-        print("starting t3 task")
-        icod = float(f.readline())
-        n = int(f.readline())
-        x = float(f.readline())
-        matrix = np.zeros([n - 1, n - 1])
-        for i in range(0, n - 1, 1):
-            line = (f.readline()).split(" ")
-            matrix[i][0] = float(line[0])
-            matrix[i][1] = float(line[1])
+        
+        N = float(f.readline())
+        T = float(f.readline())
+        m = float(f.readline())
+        c = float(f.readline())
+        k = float(f.readline())
+        aValues = (f.readline()).split()
+        wValues = (f.readline()).split()
 
-        if icod == 1:
-            return mtx.interpolation(x, matrix[0], matrix[1])
-        elif icod == 2:
-            return mtx.regression(x, matrix[0], matrix[1])
-
+        result = calc.diffEq(N, T, m, c, k, aValues, wValues)
+    
     return result
 
 def write(file, values):

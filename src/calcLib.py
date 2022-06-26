@@ -1,6 +1,7 @@
+from curses import KEY_A1
 import numpy as np
 import matrixLib as mtx
-from math import ceil
+from math import sin, cos
 
 def __getNlFunction(c, theta1, theta2):
   c2 = c[0]
@@ -246,11 +247,11 @@ def integralPol(c, a, b, numP):
     9: {
       1: (989*L)/(28350),
       2: (5888*L)/(28350),
-      3: (928*L)/(28350),
+      3: (-928*L)/(28350),
       4: (10496*L)/(28350),
-      5: (4540*L)/(28350),
+      5: (-4540*L)/(28350),
       6: (10496*L)/(28350),
-      7: (928*L)/(28350),
+      7: (-928*L)/(28350),
       8: (5888*L)/(28350),
       9: (989*L)/(28350),
     },
@@ -572,7 +573,7 @@ def diffCentral(c, x, deltaX):
 def diffRe(c, x, deltaX1, deltaX2):
   if(deltaX1==0 or deltaX2==0):
     return ["Unable to complete. DeltaX must be different than 0."]
-    
+
   d1 = diffStepFwd(c, x, deltaX1)[0]
   d2 = diffStepFwd(c, x, deltaX2)[0]
 
@@ -582,6 +583,42 @@ def diffRe(c, x, deltaX1, deltaX2):
 
   return [diff]
 
+def __getDiffEqFunc(aValues, wValues, t, c, k, m, y, yDiff1):
+  a1 = float(aValues[0])
+  a2 = float(aValues[1])
+  a3 = float(aValues[2])
+  w1 = float(wValues[0])
+  w2 = float(wValues[1])
+  w3 = float(wValues[2])
 
-def diffEq():
-  pass
+  F = a1*sin(w1*t) + a2*sin(w2*t) + a3*cos(w3*t)
+
+  yDiff2 = (F - k*y - c*yDiff1)/m
+  return yDiff2
+
+def diffEq(N, T, m, c, k, aValues, wValues):
+  y0 = 0
+  y0Diff1 = 0
+  t = 0
+
+  h = T/N
+
+  while(t < T):
+    Q1 = (h) * (y0Diff1)
+    k1 = (h) * __getDiffEqFunc(aValues, wValues, t, c, k, m, (y0 + Q1), y0Diff1)
+    
+    Q2 = (h) * (y0Diff1 + (k1/2))
+    k2 = (h) * __getDiffEqFunc(aValues, wValues, (t+(h/2)), c, k, m, (y0 + Q2), (y0Diff1 + k1))
+    
+    Q3 = (h) * (y0Diff1 + (k2/2))
+    k3 = (h) * __getDiffEqFunc(aValues, wValues, (t+(h/2)), c, k, m, (y0 + Q3), (y0Diff1 + k2))
+    
+    Q4 = h * (y0Diff1 + k3)
+    k4 = (h) * __getDiffEqFunc(aValues, wValues, (t+h), c, k, m, (y0 + Q4), (y0Diff1 + 2*k3))
+    
+    t += h
+    if t<T:
+      y0 = y0 + h*(y0Diff1 + (1/6*(Q1 + 2*Q2 + 2*Q3 + Q4)))
+      y0Diff1 = y0Diff1 + (1/6)*(k1 + 2*k2 + 2*k3 + k4)
+
+  return [y0, t]
