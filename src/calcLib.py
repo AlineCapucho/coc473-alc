@@ -533,16 +533,40 @@ def integralGauss(c, a, b, numP):
   return [result]
 
 
-def diffSteps(c, deltaX, tolm):
-  pass
+def diffStepFwd(c, x, deltaX):
+  if (deltaX == 0):
+    return ["Unable to complete. DeltaX must be different than 0."]
+
+  fDelta = __getIntFunction(c, x+deltaX)
+  f = __getIntFunction(c, x)
+
+  result = (fDelta - f)/deltaX
+
+  return [result]
 
 
-def diffStepBack(c, deltaX, tolm):
-  pass
+def diffStepBack(c, x, deltaX):
+  if (deltaX == 0):
+    return ["Unable to complete. DeltaX must be different than 0."]
+
+  fDelta = __getIntFunction(c, x-deltaX)
+  f = __getIntFunction(c, x)
+
+  result = (f - fDelta)/deltaX
+
+  return [result]
 
 
-def diffCentral(c, deltaX, tolm):
-  pass
+def diffCentral(c, x, deltaX):
+  if (deltaX == 0):
+    return ["Unable to complete. DeltaX must be different than 0."]
+
+  fDelta1 = __getIntFunction(c, x+deltaX)
+  fDelta2 = __getIntFunction(c, x-deltaX)
+
+  result = (fDelta1 - fDelta2)/(2*deltaX)
+
+  return [result]
 
 
 def diffRe(c, deltaX_1, deltaX_2, tolm):

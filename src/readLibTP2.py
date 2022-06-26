@@ -49,8 +49,8 @@ def readTask2(file):
             numP = int(f.readline())
 
         if(icod == 3):
+            x = float(f.readline())
             deltaX = float(f.readline())
-            tolm = float(f.readline())
         
         if(icod == 4):
             deltaX_1 = float(f.readline())
@@ -69,11 +69,11 @@ def readTask2(file):
                 result = calc.integralGauss(c, a, b, numP)
         elif icod == 3:
             if icod2 == 1:
-                result = calc.diffSteps(c, deltaX, tolm)
+                result = calc.diffStepFwd(c, x, deltaX)
             if icod2 == 2:
-                result = calc.diffStepBack(c, deltaX, tolm)
+                result = calc.diffStepBack(c, x, deltaX)
             if icod2 == 3:
-                result = calc.diffCentral(c, deltaX, tolm)
+                result = calc.diffCentral(c, x, deltaX)
         elif icod == 4:
             result = calc.diffRe(c, deltaX_1, deltaX_2, tolm)
             
