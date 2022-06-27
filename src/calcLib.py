@@ -722,9 +722,9 @@ def __getDiffEqFunc(aValues, wValues, t, c, k, m, y, yDiff1):
   return yDiff2
 
 
-def diffEq(N, T, m, c, k, aValues, wValues):
+def diffEq(h, T, m, c, k, aValues, wValues):
   input = [
-    f'Passo de Integração: {N}',
+    f'Passo de Integração: {h}',
     f'Tempo Total de Integração: {T}',
     f'm: {m}',
     f'c: {c}',
@@ -733,15 +733,13 @@ def diffEq(N, T, m, c, k, aValues, wValues):
     f'w1: {wValues[0]}  w2: {wValues[1]}  w3: {wValues[2]}'
   ]
 
-  if(N==0 or T==0):
-    input.apend(f'Unable to complete operation. N==0 or T==0.')
+  if(h==0 or T==0):
+    input.apend(f'Unable to complete operation. h==0 or T==0.')
     return input
 
   y0 = 0
   y0Diff1 = 0
   t = 0
-
-  h = T/N
 
   while(t <= T):
     Q1 = (h) * (y0Diff1)
