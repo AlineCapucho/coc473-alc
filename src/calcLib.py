@@ -1,5 +1,6 @@
 import numpy as np
 import matrixLib as mtx
+import matplotlib.pyplot as plt
 from math import sin, cos
 
 def __getNlFunction(c, theta1, theta2):
@@ -740,6 +741,10 @@ def diffEq(h, T, m, c, k, aValues, wValues):
   y0 = 0
   y0Diff1 = 0
   t = 0
+  temp = []
+  desl = []
+  vel = []
+  acel = []
 
   while(t <= T):
     Q1 = (h) * (y0Diff1)
@@ -754,6 +759,10 @@ def diffEq(h, T, m, c, k, aValues, wValues):
     Q4 = h * (y0Diff1 + k3)
     k4 = (h) * __getDiffEqFunc(aValues, wValues, (t+h), c, k, m, (y0 + Q4), (y0Diff1 + 2*k3))
     
+    temp.append(t)
+    desl.append(y0)
+    vel.append(y0Diff1)
+    # acel.append(y0Diff2)
     t += h
     if t<T:
       y0 = y0 + h*(y0Diff1 + (1/6*(Q1 + 2*Q2 + 2*Q3 + Q4)))
@@ -763,4 +772,11 @@ def diffEq(h, T, m, c, k, aValues, wValues):
 
   input.append(f'Tempo    |    Deslocamento     |    Velocidade     |    Aceleração')
   input.append(f'{t} | {y0} | {y0Diff1} | {y0Diff2}')
+ 
+  plt.plot(temp, desl)
+  plt.xlabel('Deslocamento')
+  plt.ylabel('Tempo')
+  plt.title('Deslocamento x Tempo')
+  plt.show()
+  
   return input
